@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><title>Финансы</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0e1a">
+<link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Финансы">
+<script src="https://accounts.google.com/gsi/client" async onload="gsiReady()"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0e1a;--card:#141829;--line:#232840;--tx:#e8eaf5;--mut:#8a90ab;--ok:#4ade80;--bad:#fb7185;--acc:#7c8cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 Manrope,system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+nav{display:flex;gap:4px;flex:1;overflow-x:auto}
+nav button,.chip{background:none;border:0;color:var(--mut);padding:8px 12px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+nav button.on,.chip.on{background:var(--card);color:var(--tx)}
+.add{background:var(--acc);color:#0b0e1a;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:800;cursor:pointer}
+main{max-width:1000px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+h2{margin:0 0 12px;font-size:17px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}h2>*{margin-left:auto;float:none!important}.mut{color:var(--mut);font-size:13px}
+.big{font-size:38px;font-weight:800;letter-spacing:-1px}.num{font-variant-numeric:tabular-nums;font-weight:600}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
+.row:last-child{border:0}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.donut{width:170px;height:170px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center}
+.donut b{background:var(--card);width:110px;height:110px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:13px}
+.bars{display:flex;gap:10px;align-items:flex-end;height:140px}.bars div{flex:1;text-align:center;font-size:12px;color:var(--mut)}
+.bars span{display:inline-block;width:40%;min-height:2px;border-radius:3px 3px 0 0;margin:0 1px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+input,select,textarea,button.x{background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;width:100%}
+.tools input{width:auto;flex:1;min-width:140px}
+button.x{width:auto;cursor:pointer;color:var(--mut);padding:2px 8px}
+dialog{max-height:90vh;overflow:auto;background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:16px;width:min(420px,94vw);padding:18px}
+dialog::backdrop{background:#000a}
+label{display:block;margin:10px 0 4px;color:var(--mut);font-size:13px}
+.seg{display:flex;gap:4px}.seg .chip{flex:1;border:1px solid var(--line)}
+.acts{display:flex;gap:8px;margin-top:16px}.acts button{flex:1}
+.ghost{background:none;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:9px;font:inherit;cursor:pointer}
+.ic{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;flex:none}
+.pk{display:flex;flex-wrap:wrap;gap:6px}
+.opt{display:flex;align-items:center;gap:8px;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:5px 10px 5px 5px;color:var(--tx);font:inherit;cursor:pointer}
+.opt.on{border-color:var(--acc)}.opt.em{width:40px;height:40px;padding:0;justify-content:center;font-size:20px}
+.sw{width:28px;height:28px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0}.sw.on{border-color:#fff}
+.ghost.bad{color:var(--bad)}
+.gear{display:none}.logo{font-size:18px;margin-right:8px}nav button b{margin-right:6px;font-weight:400}
+.seg .chip.on.k-expense{background:#4a1f2d;color:#fff}.seg .chip.on.k-income{background:#1e4b3c;color:#fff}.seg .chip.on.k-transfer{background:#1f3a52;color:#fff}
+.amt{font-size:34px;text-align:center;font-weight:800;padding:20px 10px}
+.pill{border-radius:999px;padding:6px 12px;font-size:13px}.pill.on{color:#fff;border-color:transparent}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ct{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 2px;color:var(--tx);font:inherit;font-size:12px;cursor:pointer;overflow:hidden}
+.ct b{font-size:22px;font-weight:400}.ct.on{color:#fff;border-color:transparent}.ct span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.go{width:100%;padding:14px;font-size:16px;margin-top:16px}
+.mob{display:none}.cb{width:22px;height:22px;accent-color:var(--ok);flex:none}.warn{color:#facc15}
+@media(max-width:700px){
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));overflow:visible}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px}nav button b{font-size:20px;margin:0}
+.t-accs,.t-set,.t-pay{display:none}nav button.mon{background:var(--card);color:var(--tx)}.mob{display:flex}.t-home{grid-column:1}.t-ops{grid-column:2}.t-rep{grid-column:4}.t-bud{grid-column:5}
+.fab{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:60px;height:60px;border-radius:20px;z-index:7;padding:0;box-shadow:0 8px 24px #7c8cff55}.fab b{font-size:32px;font-weight:600}.fab span{display:none}
+.gear{display:block;padding:6px 10px}.logo{flex:1}main{padding-bottom:110px}
+dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:20px 20px 0 0}}
+@media(max-width:600px){.big{font-size:30px}}
+@media(prefers-reduced-motion:no-preference){.bar i{transition:width .4s}}
+#login{position:fixed;inset:0;display:grid;place-items:center;align-content:center;gap:14px;background:var(--bg);z-index:50;text-align:center;padding:20px}#login[hidden]{display:none}
+</style></head><body>
+<div id="login" hidden><h1 style="margin:0">Финансы</h1><p class="mut">Войдите аккаунтом Google</p><div id="gbtn"></div><p id="lerr" class="bad"></p></div>
+<header><b class="logo">Финансы</b><nav id="nav"></nav><button class="gear ghost" onclick="view='set';render()">⚙️</button><button class="add fab" onclick="openTx()"><b>+</b><span> Операция</span></button></header>
+<main id="main"><p class="mut">Загрузка…</p></main>
+<dialog id="dlg"><form id="f" onsubmit="return save(event)"></form></dialog>
+<script>
+const CID='340604820465-8ottjngpo91fakj41o0rmlv0h36cctup.apps.googleusercontent.com';
+const API_URL='https://script.google.com/macros/s/AKfycbz8Nj1gtJXUALCujpMLRFnDVArvaIwdDG97oIB_jv4Q-UXqOZ56a3H-Q5b_ouOE8szX/exec';
+const TK='fin_tok',tok=()=>localStorage.getItem(TK);
+function api(fn,args){return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args,token:tok()})}).then(r=>r.json(),()=>{throw new Error('Нет связи с сервером')})
+  .then(r=>{if(r.ok)return r.data;const e=new Error(r.error);e.code=r.code;if(r.code=='auth'){localStorage.removeItem(TK);showLogin(r.error)}throw e})}
+// Совместимость со старым кодом: RUN().withSuccessHandler(f).withFailureHandler(g).имяФункции(...)
+function RUN(){let ok=()=>{},bad=e=>alert(e.message);const p=new Proxy({},{get(_,k){
+  if(k=='withSuccessHandler')return f=>(ok=f,p);if(k=='withFailureHandler')return f=>(bad=f,p);
+  return(...a)=>api(k,a).then(ok,e=>{if(e.code!='auth')bad(e)})}});return p}
+let gsi=false;
+function gsiReady(){gsi=true;if(!$('#login').hidden)drawBtn()}
+function drawBtn(){if(!gsi)return;google.accounts.id.initialize({client_id:CID,callback:r=>{$('#lerr').textContent='Проверяем…';
+  api('login',[r.credential]).then(d=>{localStorage.setItem(TK,d.token);$('#login').hidden=true;load()}).catch(e=>{if(e.code!='auth')$('#lerr').textContent=e.message})}});
+  google.accounts.id.renderButton($('#gbtn'),{theme:'filled_black',size:'large',locale:'ru',text:'signin_with'})}
+function showLogin(m){$('#login').hidden=false;$('#lerr').textContent=m||'';drawBtn()}
+function logout(){localStorage.removeItem(TK);D=null;showLogin()}
+const PAL=['#7c8cff','#f59e0b','#94a3b8','#34d399','#f472b6','#38bdf8','#fb923c','#a78bfa','#facc15'];
+const TABS=[['home','Обзор','🏠'],['ops','Операции','↔️'],['accs','Счета','👛'],['rep','Отчёты','📊'],['bud','Бюджеты','🎯'],['pay','Платежи','🗓️'],['set','Настройки','⚙️']];
+const $=s=>document.querySelector(s);
+const p2=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const fmt=n=>n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₸';
+const short=n=>Math.round(n).toLocaleString('ru-RU')+' ₸';
+const ic=o=>`<span class="ic" style="background:${o.color||'#64748b'}40">${o.icon||'🏷️'}</span>`;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MN=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+let D,view='home',ym=today().slice(0,7),rk='expense',tk='all',q='';
+
+function load(){RUN().withSuccessHandler(d=>{D=d;render()}).withFailureHandler(e=>$('#main').innerHTML='<p class="bad">'+esc(e.message)+'</p>').getData()}
+const A=id=>D.acc.find(a=>a.id==id)||{name:'?'}, C=id=>D.cat.find(c=>c.id==id)||{name:'?'};
+const rootCat=id=>{const c=C(id);return c.parent_id?c.parent_id:c.id};
+const shiftYm=(s,n)=>{const d=new Date(+s.slice(0,4),+s.slice(5)-1+n,1);return d.getFullYear()+'-'+p2(d.getMonth()+1)};
+const ymLabel=s=>MN[+s.slice(5)-1]+' '+s.slice(0,4);
+const sum=l=>l.reduce((s,t)=>s+t.amount,0);
+const inM=(m,k)=>D.tx.filter(t=>t.date.startsWith(m)&&t.kind==k);
+function bal(a){let b=+a.initial_balance;D.tx.forEach(t=>{
+  if(t.kind=='income'&&t.account_id==a.id)b+=t.amount;
+  if(t.kind=='expense'&&t.account_id==a.id)b-=t.amount;
+  if(t.kind=='transfer'){if(t.account_id==a.id)b-=t.amount;if(t.to_account_id==a.id)b+=t.to_amount||t.amount}});return b}
+const live=()=>D.acc.filter(a=>!a.archived);
+const total=()=>live().filter(a=>a.in_total).reduce((s,a)=>s+bal(a),0);
+function byCat(m,k){const g={};inM(m,k).forEach(t=>{const p=rootCat(t.category_id),o=g[p]||(g[p]={id:p,total:0,ch:{}});
+  o.total+=t.amount;if(t.category_id!=p)o.ch[t.category_id]=(o.ch[t.category_id]||0)+t.amount});
+  return Object.values(g).sort((a,b)=>b.total-a.total)}
+function donut(items,tot){let a=0;const g=items.map((x,i)=>{const s=a;a+=x.total/tot*100;return PAL[i%9]+' '+s+'% '+a+'%'}).join(',');
+  return '<div class="donut" style="background:conic-gradient('+(g||'var(--line) 0 100%')+')"><b><span>итого<br><span class="num">'+short(tot)+'</span></span></b></div>'}
+function catList(items,tot){return items.map((x,i)=>'<div class="row" style="display:block"><div style="display:flex;justify-content:space-between"><span><i class="dot" style="background:'+PAL[i%9]+'"></i>'+esc(C(x.id).name)+'</span><span class="num">'+short(x.total)+' <span class="mut">'+(x.total/tot*100).toFixed(1)+'%</span></span></div>'+
+  Object.entries(x.ch).map(([id,v])=>'<div class="mut" style="display:flex;justify-content:space-between;padding-left:18px"><span>'+esc(C(id).name)+'</span><span>'+short(v)+'</span></div>').join('')+'</div>').join('')||'<p class="mut">Нет данных за месяц</p>'}
+function txRow(t,del){const tr=t.kind=='transfer',c=tr?'':esc(C(t.category_id).name);
+  const sgn=t.kind=='income'?'+':t.kind=='expense'?'−':'',cl=t.kind=='income'?'ok':t.kind=='expense'?'bad':'';
+  return '<div class="row"><div style="display:flex;gap:10px;align-items:center">'+ic(tr?A(t.account_id):C(t.category_id))+'<div><b>'+(tr?esc(A(t.account_id).name)+' → '+esc(A(t.to_account_id).name):c)+'</b><div class="mut">'+t.time.slice(0,5)+(tr?'':' · '+esc(A(t.account_id).name))+(t.note?' · '+esc(t.note):'')+(t.created_by?' · '+esc(String(t.created_by).split('@')[0]):'')+'</div></div></div><div class="num '+cl+'">'+sgn+fmt(t.amount)+(del?' <button class="x" onclick="del('+t.id+')" title="Удалить">✕</button>':'')+'</div></div>'}
+const byNew=(a,b)=>(b.date+b.time).localeCompare(a.date+a.time)||b.id-a.id;
+function budgets(m,ed){return D.bud.map(b=>{const sp=sum(inM(m,'expense').filter(t=>rootCat(t.category_id)==b.category_id)),pc=Math.min(sp/b.limit*100,100),c=C(b.category_id);
+  return `<div style="padding:8px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="display:flex;gap:8px;align-items:center;cursor:pointer;flex:1" onclick="editBud(${b.category_id})">${ic(c)}<b>${esc(c.name)}</b></span><span class="num mut">${short(sp)} / ${short(b.limit)}</span>${ed?`<button class="x" onclick="rmBud(${b.category_id})" title="Удалить">🗑</button>`:''}</div><div class="bar"><i style="width:${pc}%;background:${sp>b.limit?'var(--bad)':c.color||'var(--acc)'}"></i></div></div>`}).join('')||'<p class="mut">Бюджетов нет. Добавьте первый.</p>'}
+function accCard(a){return '<div class="card" style="margin:0;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="display:flex;gap:10px;align-items:center">'+ic(a)+esc(a.name)+'</span><span class="num">'+fmt(bal(a))+'</span></div>'}
+function monthNav(){return '<div class="tools"><button class="ghost" onclick="mv(-1)">←</button><b>'+ymLabel(ym)+'</b><button class="ghost" onclick="mv(1)">→</button></div>'}
+function mv(n){ym=shiftYm(ym,n);render()}
+
+function render(){
+  $('#nav').innerHTML=TABS.map(([k,n,i])=>'<button class="t-'+k+(k==view?' on':'')+(k=='bud'&&view=='pay'?' mon':'')+'" onclick="view=\''+k+'\';render()"><b>'+i+'</b><span>'+n+'</span></button>').join('');
+  const m=today().slice(0,7),h=V[view]();$('#main').innerHTML=h}
+const V={
+home(){const m=today().slice(0,7),inc=sum(inM(m,'income')),ex=sum(inM(m,'expense')),cs=byCat(m,'expense');
+  return '<div class="grid"><div class="card" style="grid-column:1/-1"><div class="mut">Общий капитал</div><div class="big num">'+fmt(total())+'</div></div>'+
+  '<div class="card"><div class="mut">Доходы · '+MN[+m.slice(5)-1]+'</div><div class="big num ok" style="font-size:28px">'+fmt(inc)+'</div></div>'+
+  '<div class="card"><div class="mut">Расходы · '+MN[+m.slice(5)-1]+'</div><div class="big num bad" style="font-size:28px">'+fmt(ex)+'</div></div></div>'+
+  '<h2>Счета</h2><div class="grid" style="margin-bottom:14px">'+live().map(accCard).join('')+'</div>'+
+  '<div class="grid"><div class="card"><h2>Последние операции</h2>'+([...D.tx].sort(byNew).slice(0,8).map(t=>txRow(t)).join('')||'<p class="mut">Добавьте первую операцию</p>')+'</div>'+
+  '<div><div class="card"><h2>Структура расходов</h2>'+donut(cs,ex)+catList(cs.slice(0,4),ex)+'</div>'+payWidget()+'<div class="card"><h2>Бюджеты месяца</h2>'+budgets(m)+'</div></div></div>'},
+ops(){let l=D.tx.filter(t=>t.date.startsWith(ym)&&(tk=='all'||t.kind==tk)&&(!q||(t.note+C(t.category_id).name).toLowerCase().includes(q))).sort(byNew);
+  const ex=sum(l.filter(t=>t.kind=='expense')),inc=sum(l.filter(t=>t.kind=='income')),days={};l.forEach(t=>(days[t.date]=days[t.date]||[]).push(t));
+  return monthNav()+'<div class="tools">'+[['all','Все'],['expense','Расход'],['income','Доход'],['transfer','Перевод']].map(([k,n])=>'<button class="chip '+(tk==k?'on':'')+'" onclick="tk=\''+k+'\';render()">'+n+'</button>').join('')+
+  '<input placeholder="Поиск по комментарию или категории" value="'+esc(q)+'" onchange="q=this.value.toLowerCase();render()"></div>'+
+  Object.keys(days).map(d=>'<div class="card"><div class="mut">'+d.split('-').reverse().join('.')+'</div>'+days[d].map(t=>txRow(t,1)).join('')+'</div>').join('')+
+  (l.length?'<p class="num">Итого: <span class="bad">−'+fmt(ex)+'</span> <span class="ok">+'+fmt(inc)+'</span></p>':'<p class="mut">Операций за месяц нет</p>')},
+accs(){return D.grp.sort((a,b)=>a.sort-b.sort).map(g=>{const l=live().filter(a=>a.group_id==g.id);
+  return '<h2>'+esc(g.name)+' <span class="mut num">'+short(l.reduce((s,a)=>s+bal(a),0))+'</span></h2><div class="grid" style="margin-bottom:14px">'+l.map(accCard).join('')+'</div>'}).join('')+
+  '<p class="mut">Править счета и категории можно во вкладке «Настройки», группы счетов — на листе «Группы».</p>'},
+rep(){const ex=rk=='expense',cs=byCat(ym,rk),tot=sum(inM(ym,rk)),ms=[];for(let i=5;i>=0;i--)ms.push(shiftYm(today().slice(0,7),-i));
+  const v=ms.map(m=>[sum(inM(m,'income')),sum(inM(m,'expense'))]),mx=Math.max(1,...v.flat());
+  return monthNav()+'<div class="tools"><button class="chip '+(ex?'on':'')+'" onclick="rk=\'expense\';render()">Расходы</button><button class="chip '+(!ex?'on':'')+'" onclick="rk=\'income\';render()">Доходы</button></div>'+
+  '<div class="grid"><div class="card">'+donut(cs,tot)+'</div><div class="card">'+catList(cs,tot)+'</div></div>'+
+  '<div class="card"><h2>Доходы и расходы, 6 месяцев</h2><div class="bars">'+ms.map((m,i)=>'<div><span style="height:'+v[i][0]/mx*110+'px;background:var(--ok)"></span><span style="height:'+v[i][1]/mx*110+'px;background:var(--bad)"></span><br>'+MN[+m.slice(5)-1].slice(0,3)+'</div>').join('')+'</div></div>'},
+pay(){const l=payList(ym),tot=l.reduce((s,x)=>s+x.amt,0),pd=l.filter(x=>x.paid).reduce((s,x)=>s+x.amt,0);
+  return monthNav()+mobSw('pay')+`<div class="card"><div class="mut">Платежей в месяце: ${l.length}</div><div class="big num">${fmt(tot)}</div><div class="bar"><i style="width:${tot?pd/tot*100:0}%;background:var(--ok)"></i></div><div class="mut" style="margin-top:6px">Оплачено ${short(pd)}, осталось ${short(tot-pd)}</div></div><div class="card"><h2>Обязательные платежи <button class="add" style="float:right" onclick="editPay()">+ Платёж</button></h2>${l.map(payRow).join('')||'<p class="mut">Добавьте первый платёж</p>'}<p class="mut">Это напоминание, в статистику платежи не попадают. Расход вносите во вкладке «Операции», а здесь отмечайте оплату. В каждом месяце галочки свои.</p></div>`},
+set(){return '<div class="card"><h2>Счета <button class="add" style="float:right" onclick="editAcc()">+ Счёт</button></h2>'+D.acc.filter(a=>!a.archived).map(a=>`<div class="row" style="cursor:pointer" onclick="editAcc(${a.id})"><span style="display:flex;gap:10px;align-items:center">${ic(a)}${esc(a.name)}</span><span class="num mut">${fmt(bal(a))}</span></div>`).join('')+'</div>'+
+  [['expense','Категории расходов'],['income','Источники доходов']].map(([k,n])=>`<div class="card"><h2>${n} <button class="add" style="float:right" onclick="editCat(0,'${k}')">+ Категория</button></h2>${tree(k)}</div>`).join('')+`<button class="ghost" onclick="logout()">Выйти (${esc(D.me)})</button>`},
+bud(){return monthNav()+mobSw('bud')+'<div class="card"><h2>Бюджеты <button class="add" style="float:right" onclick="editBud()">+ Бюджет</button></h2>'+budgets(ym,1)+'<p class="mut">Лимит действует каждый месяц и считается вместе с подкатегориями. Нажмите на бюджет, чтобы изменить лимит.</p></div>'}};
+
+function del(id){if(confirm('Удалить операцию?'))RUN().withSuccessHandler(load).delTx(id)}
+
+const COL=['#22c55e','#14b8a6','#38bdf8','#7c8cff','#8b5cf6','#ec4899','#ef4444','#f97316','#f59e0b','#eab308','#64748b','#d946ef'];
+const EMO='💵 💳 🏛️ 🏦 💰 🪙 🐷 🏠 🛒 🍎 ☕ 🍽️ 🚕 🚌 ✈️ 🚗 ⛽ 🔧 💊 ❤️ 🎬 🎮 📱 👕 🎁 🎓 💼 💻 📈 🧾 🔌 🌐 🚬 🛍️ 🐶 🧒 💄 🏋️ 🎵 🔑 ⭐ 🏪'.split(' ');
+let F={},E={},MODE='tx';
+const ico=(o,on,fn)=>`<button type="button" class="opt${on?' on':''}" onclick="${fn}">${ic(o)}${esc(o.name)}</button>`;
+const done=()=>{$('#dlg').close();load()};
+const fail=x=>alert(x.message);
+const closeBtn=`<button type="button" class="ghost" onclick="$('#dlg').close()">Отмена</button>`;
+
+const pil=(o,on,fn)=>`<button type="button" class="opt pill${on?' on':''}" style="${on?'background:'+o.color:''}" onclick="${fn}">${o.icon||'🏷️'} ${esc(o.name)}</button>`;
+const tile=(o,on,fn)=>`<button type="button" class="ct${on?' on':''}" style="${on?'background:'+o.color:''}" onclick="${fn}"><b>${o.icon||'🏷️'}</b><span>${esc(o.name)}</span></button>`;
+const KC={expense:'#e11d48',income:'#22a06b',transfer:'#2f80c9'};
+function openTx(){if(!D)return;MODE='tx';const n=new Date();
+  F={kind:'expense',acc:live()[0].id,to:null,par:null,cat:null,date:today(),time:p2(n.getHours())+':'+p2(n.getMinutes()),amount:'',note:''};drawForm();$('#dlg').showModal()}
+function capF(){[['#fa','amount'],['#fd','date'],['#fh','time'],['#fn','note']].forEach(([i,k])=>{if($(i))F[k]=$(i).value})}
+function setF(k,v){capF();F[k]=v;if(k=='kind')F.par=F.cat=null;if(k=='par')F.cat=v;drawForm()}
+function filt(v){document.querySelectorAll('#cg .ct').forEach(b=>b.style.display=b.textContent.toLowerCase().includes(v.toLowerCase())?'':'none')}
+function drawForm(){const tr=F.kind=='transfer',ps=D.cat.filter(c=>c.kind==F.kind&&!c.parent_id&&!c.archived),par=F.par&&C(F.par),ch=D.cat.filter(c=>F.par&&c.parent_id==F.par&&!c.archived),all=F.cat==F.par;
+  const accs=(sel,k)=>'<div class="pk">'+live().map(a=>pil(a,a.id==sel,`setF('${k}',${a.id})`)).join('')+'</div>';
+  $('#f').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">Новая операция</h2><button type="button" class="x" onclick="$('#dlg').close()">✕</button></div>`+
+  '<div class="seg">'+[['expense','Расход'],['income','Доход'],['transfer','Перевод']].map(([k,t])=>`<button type="button" class="chip k-${k}${F.kind==k?' on':''}" onclick="setF('kind','${k}')">${t}</button>`).join('')+'</div>'+
+  `<input id="fa" class="amt" inputmode="decimal" placeholder="0 ₸" value="${esc(F.amount)}" required style="margin-top:12px">`+
+  '<label>'+(tr?'Со счёта':'Счёт')+'</label>'+accs(F.acc,'acc')+
+  (tr?'<label>На счёт</label>'+accs(F.to,'to'):'<label>Категория</label><input placeholder="Поиск" oninput="filt(this.value)" onkeydown="if(event.key==\'Enter\')event.preventDefault()"><div class="cg" id="cg" style="margin-top:8px">'+ps.map(p=>tile(p,p.id==F.par,`setF('par',${p.id})`)).join('')+'</div>'+
+    (ch.length?`<div class="pk" style="margin-top:10px"><button type="button" class="opt pill${all?' on':''}" style="${all?'background:'+par.color:''}" onclick="setF('cat',${F.par})">Все</button>`+ch.map(c=>pil(c,c.id==F.cat,`setF('cat',${c.id})`)).join('')+'</div>':''))+
+  `<label>Дата и время</label><div style="display:flex;gap:8px"><input type="date" id="fd" value="${F.date}"><input type="time" id="fh" value="${F.time}"></div>`+
+  `<label>Комментарий</label><textarea id="fn" rows="2" placeholder="Комментарий… (слова в [скобках] станут тегами)">${esc(F.note)}</textarea>`+
+  `<button class="add go" style="background:${KC[F.kind]};color:#fff">Добавить</button>`}
+function save(e){e.preventDefault();if(MODE=='ed')return saveEd();capF();const tr=F.kind=='transfer';
+  if(tr?!F.to:!F.cat)return alert(tr?'Выберите счёт-получатель':'Выберите категорию'),false;
+  RUN().withSuccessHandler(done).withFailureHandler(fail).addTx({kind:F.kind,amount:parseFloat(String(F.amount).replace(/\s/g,'').replace(',','.')),
+    account_id:F.acc,to_account_id:tr?F.to:null,category_id:tr?null:F.cat,date:F.date,time:F.time+':00',note:F.note,tags:[...F.note.matchAll(/\[([^\]]+)\]/g)].map(m=>m[1]).join(', ')});return false}
+function editBud(id){MODE='ed';const b=D.bud.find(x=>x.category_id==id);E={t:'bud',o:{cat:id||null,fixed:!!id,limit:b?b.limit:''}};drawBud();$('#dlg').showModal()}
+function drawBud(){const o=E.o,used=D.bud.map(b=>b.category_id),ps=D.cat.filter(c=>c.kind=='expense'&&!c.parent_id&&!c.archived&&(o.fixed?c.id==o.cat:!used.includes(c.id)));
+  $('#f').innerHTML=`<h2>Бюджет на месяц</h2><label>Категория (с подкатегориями)</label><div class="pk">${ps.map(p=>ico(p,p.id==o.cat,`pickBud(${p.id})`)).join('')||'<span class="mut">Бюджеты есть на все категории</span>'}</div><label>Лимит в месяц, ₸</label><input id="bl" inputmode="decimal" value="${esc(o.limit)}" required><div class="acts">${closeBtn}<button class="add">Сохранить</button></div>`}
+function pickBud(id){if($('#bl'))E.o.limit=$('#bl').value;E.o.cat=id;drawBud()}
+function rmBud(id){if(confirm('Удалить бюджет?'))RUN().withSuccessHandler(load).delBudget(id)}
+
+function payList(m){const [y,mo]=m.split('-').map(Number),last=new Date(y,mo,0).getDate(),t=today(),cur=t.slice(0,7);
+  return D.pay.map(p=>{const r=D.paid.find(x=>x.payment_id==p.id&&x.month==m);return {p,paid:!!r,amt:r?r.amount:p.amount,day:Math.min(p.due_day,last)}})
+   .filter(x=>!x.p.archived||x.paid).sort((a,b)=>a.day-b.day).map(x=>{const due=m+'-'+p2(x.day),d=(new Date(due)-new Date(t))/864e5;
+    x.st=x.paid?'ok':m<cur||(m==cur&&d<0)?'late':m==cur&&d<=3?'soon':'';return x})}
+const payRow=x=>{const c={late:'bad',soon:'warn',ok:'ok'}[x.st]||'mut';
+  return `<div class="row"><input type="checkbox" class="cb" ${x.paid?'checked':''} onchange="togPay(${x.p.id},this.checked)"><span style="display:flex;gap:10px;align-items:center;flex:1;cursor:pointer;opacity:${x.paid?.6:1}" onclick="editPay(${x.p.id})">${ic(x.p)}<span><b>${esc(x.p.name)}</b><div class="${c}" style="font-size:13px">${x.paid?'оплачено':'до '+x.day+' числа'+(x.st=='late'?' · просрочено':'')}</div></span></span><span class="num">${fmt(x.amt)}</span></div>`};
+const mobSw=cur=>`<div class="tools mob"><button class="chip${cur=='bud'?' on':''}" onclick="view='bud';render()">Бюджеты</button><button class="chip${cur=='pay'?' on':''}" onclick="view='pay';render()">Платежи</button></div>`;
+function payWidget(){const l=payList(today().slice(0,7));if(!l.length)return '';const u=l.filter(x=>!x.paid);
+  return `<div class="card" style="cursor:pointer" onclick="view='pay';render()"><h2>К оплате <span class="mut num" style="float:right">${u.length?short(u.reduce((s,x)=>s+x.amt,0)):''}</span></h2>`+
+   (u.slice(0,4).map(x=>`<div class="row"><span style="display:flex;gap:10px;align-items:center">${ic(x.p)}<span><b>${esc(x.p.name)}</b><div class="${x.st=='late'?'bad':x.st=='soon'?'warn':'mut'}" style="font-size:13px">до ${x.day} числа</div></span></span><span class="num">${short(x.amt)}</span></div>`).join('')||'<p class="ok">Все платежи этого месяца оплачены ✓</p>')+'</div>'}
+function togPay(id,on){const p=D.pay.find(x=>x.id==id);D.paid=D.paid.filter(x=>!(x.payment_id==id&&x.month==ym));if(on)D.paid.push({payment_id:id,month:ym,amount:p.amount});render();
+  RUN().withFailureHandler(x=>{alert(x.message);load()}).setPaid(id,ym,on,p.amount)}
+function editPay(id){MODE='ed';const p=id&&D.pay.find(x=>x.id==id);E={t:'pay',o:id?{...p}:{name:'',amount:'',due_day:1,color:COL[7],icon:'🧾'}};drawPay();$('#dlg').showModal()}
+function drawPay(){const o=E.o;$('#f').innerHTML=`<h2>Обязательный платёж</h2><label>Название</label><input id="en" value="${esc(o.name)}" required><label>Сумма в месяц, ₸</label><input id="pa" inputmode="decimal" value="${esc(o.amount)}" required><label>Оплатить до числа</label><input id="pd" type="number" min="1" max="31" value="${o.due_day}" required>`+
+  '<label>Цвет</label><div class="pk">'+COL.map(c=>`<button type="button" class="sw${c==o.color?' on':''}" style="background:${c}" onclick="pick('color','${c}')"></button>`).join('')+'</div><label>Иконка</label><div class="pk">'+EMO.map(e=>`<button type="button" class="opt em${e==o.icon?' on':''}" onclick="pick('icon','${e}')">${e}</button>`).join('')+'</div>'+
+  `<div class="acts">${closeBtn}${o.id?'<button type="button" class="ghost bad" onclick="rmEd()">Удалить</button>':''}<button class="add">Сохранить</button></div>`}
+function savePay_(){capEd();const o=E.o,n=parseFloat(String(o.amount).replace(/\s/g,'').replace(',','.')),d=Math.round(+o.due_day);
+  if(!(n>0))return alert('Введите сумму'),false;if(!(d>=1&&d<=31))return alert('День месяца от 1 до 31'),false;
+  RUN().withSuccessHandler(done).withFailureHandler(fail).savePay({id:o.id||0,name:o.name.trim(),amount:n,due_day:d,color:o.color,icon:o.icon,archived:false});return false}
+
+// Настройки: счета и категории
+const crow=(c,l)=>`<div class="row" style="cursor:pointer;padding-left:${l*28}px" onclick="editCat(${c.id})"><span style="display:flex;gap:10px;align-items:center">${ic(c)}${esc(c.name)}</span></div>`;
+const tree=k=>D.cat.filter(c=>c.kind==k&&!c.parent_id&&!c.archived).map(p=>crow(p,0)+D.cat.filter(c=>c.parent_id==p.id&&!c.archived).map(c=>crow(c,1)).join('')).join('');
+function editAcc(id){MODE='ed';const a=id&&A(id);E={t:'acc',o:id?{...a,bal:bal(a)}:{name:'',group_id:D.grp[0].id,type:'card',color:COL[0],icon:'💳',bal:0}};drawEd();$('#dlg').showModal()}
+function editCat(id,k){MODE='ed';E={t:'cat',o:id?{...C(id)}:{kind:k,name:'',parent_id:'',color:COL[3],icon:'🏷️'}};drawEd();$('#dlg').showModal()}
+function capEd(){const o=E.o,g=i=>$(i)?$(i).value:null;if(!$('#en'))return;o.name=g('#en');if(E.t=='acc'){o.group_id=+g('#eg');o.bal=g('#eb')}else if(E.t=='pay'){o.amount=g('#pa');o.due_day=g('#pd')}else o.parent_id=g('#ep')}
+function pick(k,v){capEd();E.o[k]=v;drawEd()}
+function drawEd(){if(E.t=='pay')return drawPay();const o=E.o,a=E.t=='acc';
+  $('#f').innerHTML=`<label>Название</label><input id="en" value="${esc(o.name)}" required>`+
+  (a?'<label>Группа</label><select id="eg">'+D.grp.map(g=>`<option value="${g.id}"${g.id==o.group_id?' selected':''}>${esc(g.name)}</option>`).join('')+`</select><label>Текущий остаток, ₸</label><input id="eb" inputmode="decimal" value="${o.bal}">`
+   :'<label>Родительская категория</label><select id="ep"><option value="">— верхний уровень —</option>'+D.cat.filter(c=>c.kind==o.kind&&!c.parent_id&&!c.archived&&c.id!=o.id).map(c=>`<option value="${c.id}"${c.id==o.parent_id?' selected':''}>${esc(c.name)}</option>`).join('')+'</select>')+
+  '<label>Цвет</label><div class="pk">'+COL.map(c=>`<button type="button" class="sw${c==o.color?' on':''}" style="background:${c}" onclick="pick('color','${c}')"></button>`).join('')+'</div>'+
+  '<label>Иконка</label><div class="pk">'+EMO.map(e=>`<button type="button" class="opt em${e==o.icon?' on':''}" onclick="pick('icon','${e}')">${e}</button>`).join('')+'</div>'+
+  `<div class="acts">${closeBtn}${o.id?'<button type="button" class="ghost bad" onclick="rmEd()">Удалить</button>':''}<button class="add">Сохранить</button></div>`}
+function saveEd(){if(E.t=='pay')return savePay_();if(E.t=='bud'){const n=parseFloat(String($('#bl').value).replace(/\s/g,'').replace(',','.'));if(!E.o.cat)return alert('Выберите категорию'),false;if(!(n>0))return alert('Введите лимит больше нуля'),false;RUN().withSuccessHandler(done).withFailureHandler(fail).setBudget(E.o.cat,n);return false}capEd();const o=E.o,r=RUN().withSuccessHandler(done).withFailureHandler(fail);
+  if(E.t=='acc'){const b=parseFloat(String(o.bal).replace(/\s/g,'').replace(',','.'));if(isNaN(b))return alert('Введите остаток числом'),false;
+    const ex=o.id?A(o.id):null;
+    r.saveAcc({id:o.id||0,name:o.name.trim(),group_id:o.group_id,type:o.type||'card',currency:'KZT',initial_balance:b-(ex?bal(ex)-ex.initial_balance:0),in_total:o.in_total!==false,archived:false,color:o.color,icon:o.icon})}
+  else r.saveCat({id:o.id||0,kind:o.kind,name:o.name.trim(),parent_id:o.parent_id?+o.parent_id:'',archived:false,color:o.color,icon:o.icon});return false}
+function rmEd(){if(!confirm('Удалить?'))return;RUN().withSuccessHandler(r=>{if(r=='archived')alert('У записи есть история, поэтому она скрыта, а не удалена.');done()}).withFailureHandler(fail)[E.t=='acc'?'delAcc':E.t=='pay'?'delPay':'delCat'](E.o.id)}
+
+// Синхронизация: раз в 10 с спрашиваем метку изменений, при смене подгружаем данные (и при возврате в приложение)
+function poll(){if(!D||document.hidden||$('#dlg').open||/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||''))return;
+  RUN().withSuccessHandler(v=>{if(v!==D.v)load()}).ver()}
+let act=Date.now();['pointerdown','keydown'].forEach(e=>addEventListener(e,()=>act=Date.now(),{passive:true}));
+function tick(){poll();const i=Date.now()-act;setTimeout(tick,i<6e4?1e4:i<3e5?3e4:6e4)}setTimeout(tick,1e4);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D&&!$('#dlg').open)load()});
+if(!tok())showLogin();else load();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
